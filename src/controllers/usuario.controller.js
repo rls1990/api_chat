@@ -85,15 +85,19 @@ export const login = async (req, res) => {
   try {
     const { nombre, email, password } = req.body;
 
+    console.log(nombre, password);
+
     let user;
 
     if (nombre) user = await User.findOne({ nombre });
     else if (email) user = await User.findOne({ email });
     else return res.status(401).json({ message: "Credenciales inválidas" });
 
-    const isMatch = await compare(password, user.password);
+    console.log(user);
 
-    if (!isMatch) {
+    let isMatch = await compare(password, user.password);
+
+    if (!isMatch || !user) {
       return res.status(401).json({ message: "Credenciales inválidas" });
     }
 
@@ -111,6 +115,7 @@ export const login = async (req, res) => {
 export const register = async (req, res) => {
   try {
     const { password } = req.body;
+    console.log(req.body);
 
     const newUser = new User(req.body);
     newUser.password = await encrypt(password);
